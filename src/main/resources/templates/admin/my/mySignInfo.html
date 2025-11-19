@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{admin/main/base}">
+
+<head>
+	<title>로그인 정보</title>
+	<th:block th:replace="~{admin/my/mypageSidebar :: sidebarStyles}"></th:block>
+	<style>
+		.profile-form {
+			width: 100%;
+			max-width: 550px;
+		}
+
+		.form-group {
+			margin-bottom: 25px;
+		}
+
+		.form-label {
+			font-weight: bold;
+			font-size: 14px;
+			color: #555;
+			margin-right: 20px;
+		}
+
+		.form-input[disabled] {
+			width: 400px;
+			height: 40px;
+			border: none;
+			border-bottom: 2px solid #ccc;
+			outline: none;
+			padding-left: 10px;
+		}
+
+
+		/* 소셜 연동 섹션 */
+		.social-link-section {
+			margin-top: 40px;
+			padding-top: 20px;
+			border-top: 1px solid #eee;
+		}
+
+		.section-title {
+			font-size: 16px;
+			margin-bottom: 20px;
+		}
+
+		.social-link-item {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 15px 0;
+			border-bottom: 1px solid #f2f2f2;
+		}
+
+		.social-link-item:last-child {
+			border-bottom: none;
+		}
+
+		.social-logo-kakao,
+		.social-logo-naver {
+			font-weight: bold;
+		}
+
+		.link-status {
+			display: flex;
+			align-items: center;
+			gap: 15px;
+		}
+
+		.btn-disconnect {
+			background: none;
+			border: 1px solid #aaa;
+			color: #888;
+			font-size: 12px;
+			padding: 4px 8px;
+		}
+
+		/* 회원탈퇴 등 기타 액션 */
+		.form-actions {
+			text-align: right;
+			margin-top: 40px;
+		}
+
+		.form-actions a {
+			font-size: 14px;
+			color: #888;
+			text-decoration: underline;
+		}
+
+		.account-type-title {
+			display: flex;
+			align-items: center;
+			gap: 15px;
+			/* 제목과 버튼 사이 간격 */
+		}
+
+		.btn-convert {
+			font-size: 12px;
+			padding: 6px 10px;
+			height: auto;
+		}
+
+		.password-confirm-wrapper {
+			display: inline-flex;
+			gap: 5px;
+			align-items: center;
+		}
+
+		.form-input-small {
+			height: 32px;
+			padding: 0 8px;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+		}
+
+		.btn-confirm-unlink {
+			height: 32px;
+			padding: 0 10px;
+			font-size: 12px;
+			background-color: #555;
+			color: white;
+			border: none;
+			border-radius: 4px;
+		}
+	</style>
+</head>
+
+<main layout:fragment="content">
+	<div class="container">
+		<div th:replace="~{admin/my/mypageSidebar :: sidebarFragment}"></div>
+		<div class="content">
+			<h2 class="contentTitle">로그인 정보</h2>
+
+			<form th:object="${admin}" class="profile-form">
+
+				<div class="form-group">
+					<label for="email" class="form-label">이메일</label>
+					<input type="email" id="email" class="form-input" th:value="${admin.email}" readonly disabled />
+				</div>
+
+				<div class="form-group">
+					<label class="form-label">비밀번호</label>
+					<a href="/admin/my/signInfo/password" class="btn btn-secondary">비밀번호 변경</a>
+				</div>
+
+				<div class="form-actions">
+					<a id="withdraw-link" th:href="@{/admin/my/signInfo/withdrawal}">회원 탈퇴</a>
+				</div>
+
+			</form>
+		</div>
+	</div>
+</main>
+</div>
+</main>
+<th:block layout:fragment="script">
+	<th:block th:replace="~{admin/my/mypageSidebar :: sidebarScripts}"></th:block>
+	<script th:inline="javascript" type="module">
+
+	</script>
+</th:block>
+
+</html>
