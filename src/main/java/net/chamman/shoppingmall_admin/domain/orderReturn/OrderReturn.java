@@ -2,6 +2,7 @@ package net.chamman.shoppingmall_admin.domain.orderReturn;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.SQLRestriction;
@@ -25,6 +26,7 @@ import net.chamman.shoppingmall_admin.domain.address.Address;
 import net.chamman.shoppingmall_admin.domain.orderItem.OrderItem;
 import net.chamman.shoppingmall_admin.domain.returnPayment.ReturnPayment;
 import net.chamman.shoppingmall_admin.domain.shipment.Shipment;
+import net.chamman.shoppingmall_admin.exception.domain.order.OrderReturnIllegalException;
 import net.chamman.shoppingmall_admin.support.BaseEntity;
 
 @Entity
@@ -83,8 +85,39 @@ public class OrderReturn extends BaseEntity{
 		private final String label;
 
 	}
+
+	protected void shipmentStart(Shipment shipment) {
+		if(shipment == null) {
+			throw new OrderReturnIllegalException("반품 운송장 기입 처리 불가. shipment == null");
+		}
+		if (this.shipment != null) {
+			throw new OrderReturnIllegalException("반품 운송장 기입 처리 불가. 이미 운송장 정보가 등록되어 있음.");
+		}
+		this.shipment = shipment;
+	}
 	
-	public void refund(ReturnPayment returnPayment) {
+	protected void shipmentUpdate(Shipment shipment) {
+		if(shipment == null) {
+			throw new OrderReturnIllegalException("반품 운송장 수정 처리 불가. shipment == null");
+		}
+		this.shipment = shipment;
+	}
+	
+	protected void arrvied() {
+		
+		if(!Objects.equals(OrderReturnStatus.RETURN_REQUESTED, this.orderReturnStatus)) {
+			throw new OrderReturnIllegalException("반품 입고 처리 불가. 반품 상품 상태가 반품중이 아님.");
+		}
+		
+		if (this.shipment == null) {
+			throw new OrderReturnIllegalException("반품 입고 처리 불가. 운송장 정보가 등록되어 있지 않음.");
+		}
+		
+		this.orderReturnStatus=OrderReturnStatus.RETURN_INSPECTING;
+		
+	}
+	
+	protected void refund(ReturnPayment returnPayment) {
 		this.returnPayment.add(returnPayment);
 		this.orderReturnStatus=OrderReturnStatus.RETURN_COMPLETED;
 	}

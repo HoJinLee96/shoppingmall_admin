@@ -12,6 +12,8 @@ import net.chamman.shoppingmall_admin.domain.orderReturn.OrderReturn.ReturnReaso
 import net.chamman.shoppingmall_admin.domain.orderReturn.dto.OrderReturnResponseDto;
 import net.chamman.shoppingmall_admin.domain.returnPayment.ReturnPayment;
 import net.chamman.shoppingmall_admin.domain.returnPayment.ReturnPaymentService;
+import net.chamman.shoppingmall_admin.domain.shipment.Shipment;
+import net.chamman.shoppingmall_admin.domain.shipment.dto.ShipmentRequestDto;
 import net.chamman.shoppingmall_admin.exception.domain.order.OrderItemIntegrityException;
 import net.chamman.shoppingmall_admin.exception.domain.order.OrderReturnIllegalException;
 import net.chamman.shoppingmall_admin.security.obfuscation.Obfuscator;
@@ -43,6 +45,64 @@ public class OrderReturnService {
 					.build();
 		
 		return orderReturn;
+	}
+	
+	/**
+	 * 반품 운송장 정보 입력
+	 */
+	@Transactional
+	public OrderReturnResponseDto shipmentStartOrderReturn(Long orderReturnId, ShipmentRequestDto dto) {
+		
+		OrderReturn orderReturn = findOrderReturnById(orderReturnId);
+		
+		Shipment shipment= Shipment.builder()
+				.shippingCompany(dto.shippingCompany())
+				.trackingNumber(dto.trackingNumber())
+				.build();
+		
+		orderReturn.shipmentStart(shipment);
+		
+		return OrderReturnResponseDto.fromEntity(orderReturn, obfuscator);
+	}
+	
+	/**
+	 * 반품 운송장 정보 수정
+	 */
+	@Transactional
+	public OrderReturnResponseDto shipmentUpdateOrderReturn(Long orderReturnId, ShipmentRequestDto dto) {
+		
+		OrderReturn orderReturn = findOrderReturnById(orderReturnId);
+		
+		Shipment shipment= Shipment.builder()
+				.shippingCompany(dto.shippingCompany())
+				.trackingNumber(dto.trackingNumber())
+				.build();
+		
+		orderReturn.shipmentUpdate(shipment);
+		
+		return OrderReturnResponseDto.fromEntity(orderReturn, obfuscator);
+	}
+	
+	/**
+	 * 수동 반품 입고 완료
+	 */
+	@Transactional
+	public OrderReturnResponseDto arrivedOrderReturn(Long orderReturnId) {
+		
+		OrderReturn orderReturn = findOrderReturnById(orderReturnId);
+		
+		if(orderReturn.getShipment() == null) {
+			Shipment shipment = Shipment.builder()
+					.shippingCompany("직접운송")
+					.trackingNumber("777777777777")
+					.build();
+			
+			orderReturn.shipmentStart(shipment);
+		}
+
+		orderReturn.arrvied();
+		
+		return OrderReturnResponseDto.fromEntity(orderReturn, obfuscator);
 	}
 
 	/**
