@@ -51,13 +51,6 @@ public enum HttpStatusCode {
 	MEMBER_STATUS_LOCKED(403,"4536","message.member.status_locked"),
 	MEMBER_STATUS_UNVERIFIED(403,"4537","message.member.status_unverified"),
 	
-	// Product 452
-//	PRODUCT_NOT_FOUND(404,"4520","message.product.not_found"),
-//	SOLD_OUT(409,"4521","message.product.sold_out"),
-	STOCK_NOT_ENOUGH(409,"4522","message.product.not_enough_stock"),
-	STOCK_VALIDATION_FAILED( 404,"4523","message.product.invalid_stock_quantity"),
-	
-	
 //	DELETED_EMAIL_EXISTS(200,"2072","message.user.deleted_email_exists"),
 //	
 //	OAUTH_NOT_FOUND(404,"4530","message.oauth.not_found"),
@@ -142,16 +135,24 @@ public enum HttpStatusCode {
 //	DECODING_FAIL(400, "4000", "message.common.illegal_input_value")
 	
 	//ProductCategory 460
-	PRODUCT_CATEGORY_NOT_FOUND( 404,"4601","message.product_category.not_found"),
+	PRODUCT_CATEGORY_ILLEGAL( 400,"4600","message.product_category.illegal"),
 	PRODUCT_CATEGORY_DELETE_FAILED( 400,"4602","message.product_category.delete_failed"),
 	//Product 461
-	PRODUCT_NOT_FOUND( 404,"4611","message.product.not_found"),
+	PRODUCT_ILLEGAL( 400,"4610","message.product.illegal"),
 	//ProductVariant 462
 	PRODUCT_VARIANT_ILLEGAL( 400,"4620","message.product_variant.illegal"),
+	PRODUCT_VARIANT_STOCK_NOT_ENOUGH(409,"4621","message.product_variant.stock_not_enough"),
+	//ProductImage 463
+	PRODUCT_IMAGE_ILLEGAL( 400,"4630","message.product_image.illegal"),
 	
-	// Order 463
-	// OrderItem 464
-	ORDER_ITEM_ILLEGAL( 400,"4640","message.order_item.illegal")
+	// Order 464
+	ORDER_ILLEGAL( 400,"4640","message.order.illegal"),
+	// OrderItem 465
+	ORDER_ITEM_ILLEGAL( 400,"4650","message.order_item.illegal"),
+	// OrderReturn 466
+	ORDER_RETURN_ILLEGAL( 400,"4660","message.order_return.illegal"),
+	// OrderExchange 467
+	ORDER_EXCHANGE_ILLEGAL( 400,"4670","message.order_exchange.illegal")
 	
 	; 
 	

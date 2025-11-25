@@ -31,7 +31,7 @@ public class OrderItemController {
 	private final OrderItemService orderItemService;
     private final ApiResponseFactory apiResponseFactory;
     
-	@Operation(summary = "운송장 정보 입력 (배송 시작)")
+    @Operation(summary = "상품준비중 -> 배송 시작 운송장 정보 입력")
 	@SecurityRequirement(name = "X-Access-Token")
 	@PatchMapping("/shipment/start/{orderItemId}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -45,7 +45,7 @@ public class OrderItemController {
 		return ResponseEntity.ok(apiResponseFactory.success(HttpStatusCode.UPDATE_SUCCESS));
 	}
 
-	@Operation(summary = "운송장 정보 다량 입력 (배송 시작)")
+    @Operation(summary = "상품준비중 -> 배송 시작 운송장 정보 다량 입력")
 	@SecurityRequirement(name = "X-Access-Token")
 	@PatchMapping("/shipment/start")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
