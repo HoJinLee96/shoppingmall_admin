@@ -29,6 +29,20 @@ public class OrderReturnController {
 	private final OrderReturnService orderReturnService;
     private final ApiResponseFactory apiResponseFactory;
     
+    @Operation(summary = "반품 메모 수정")
+    @SecurityRequirement(name = "X-Access-Token")
+    @PatchMapping("/memo/{orderReturnId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<ApiResponseDto<OrderReturnResponseDto>> modifyMemo(
+    		@PathVariable Long orderReturnId,
+    		@RequestBody String memo) { 
+    	
+    	log.debug("* 반품 메모 수정.");
+    	OrderReturnResponseDto responseDto = orderReturnService.modifyMemo(orderReturnId, memo);
+    	
+    	return ResponseEntity.ok(apiResponseFactory.success(HttpStatusCode.UPDATE_SUCCESS, responseDto));
+    }
+    
     @Operation(summary = "반품 운송장 정보 입력")
     @SecurityRequirement(name = "X-Access-Token")
     @PatchMapping("/shipment/start/{orderReturnId}")
@@ -51,7 +65,7 @@ public class OrderReturnController {
     		@PathVariable Long orderReturnId,
     		@Valid @RequestBody ShipmentRequestDto dto) { 
     	
-    	log.debug("* 반품 운송장 정보 입력.");
+    	log.debug("* 반품 운송장 정보 수정.");
     	OrderReturnResponseDto responseDto = orderReturnService.shipmentUpdateOrderReturn(orderReturnId, dto);
     	
     	return ResponseEntity.ok(apiResponseFactory.success(HttpStatusCode.UPDATE_SUCCESS, responseDto));
@@ -65,7 +79,7 @@ public class OrderReturnController {
     		@PathVariable Long orderReturnId) { 
     	
     	log.debug("* 수동 반품 입고 완료.");
-    	OrderReturnResponseDto responseDto = orderReturnService.arrivedOrderReturn(orderReturnId);
+    	OrderReturnResponseDto responseDto = orderReturnService.manualArrivedOrderReturn(orderReturnId);
     	
     	return ResponseEntity.ok(apiResponseFactory.success(HttpStatusCode.UPDATE_SUCCESS, responseDto));
     }
@@ -82,5 +96,18 @@ public class OrderReturnController {
     	
     	return ResponseEntity.ok(apiResponseFactory.success(HttpStatusCode.UPDATE_SUCCESS, responseDto));
 	}
+    
+    @Operation(summary = "반품 반려")
+    @SecurityRequirement(name = "X-Access-Token")
+    @PatchMapping("/unable/{orderReturnId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<ApiResponseDto<OrderReturnResponseDto>> unableOrderReturn(
+    		@PathVariable Long orderReturnId) { 
+    	
+    	log.debug("* 반품 반려.");
+    	OrderReturnResponseDto responseDto = orderReturnService.unableOrderReturn(orderReturnId);
+    	
+    	return ResponseEntity.ok(apiResponseFactory.success(HttpStatusCode.UPDATE_SUCCESS, responseDto));
+    }
     
 }

@@ -1,21 +1,15 @@
 package net.chamman.shoppingmall_admin.domain.orderReturn;
 
-import java.util.Objects;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import net.chamman.shoppingmall_admin.domain.orderItem.OrderItem;
-import net.chamman.shoppingmall_admin.domain.orderReturn.OrderReturn.OrderReturnStatus;
-import net.chamman.shoppingmall_admin.domain.orderReturn.OrderReturn.ReturnReason;
 import net.chamman.shoppingmall_admin.domain.orderReturn.dto.OrderReturnResponseDto;
 import net.chamman.shoppingmall_admin.domain.returnPayment.ReturnPayment;
 import net.chamman.shoppingmall_admin.domain.returnPayment.ReturnPaymentService;
 import net.chamman.shoppingmall_admin.domain.shipment.Shipment;
 import net.chamman.shoppingmall_admin.domain.shipment.dto.ShipmentRequestDto;
-import net.chamman.shoppingmall_admin.exception.domain.order.OrderItemIntegrityException;
-import net.chamman.shoppingmall_admin.exception.domain.order.OrderReturnIllegalException;
+import net.chamman.shoppingmall_admin.exception.domain.orderReturn.OrderReturnIntegrityException;
 import net.chamman.shoppingmall_admin.security.obfuscation.Obfuscator;
 
 @Service
@@ -25,26 +19,26 @@ public class OrderReturnService {
 	private final OrderReturnRepository orderReturnRepository;
 	private final ReturnPaymentService returnPaymentService;
 	private final Obfuscator obfuscator;
+	
+	private static final String MANUAL_ARRIVED_SHIPPING_COMPANY = "직접운송";
+	private static final String MANUAL_ARRIVED_SHIPPING_TRACKING_NUMBER = "777777777777";
 
 	public OrderReturn findOrderReturnById(Long orderReturnId) {
-		return orderReturnRepository.findById(orderReturnId).orElseThrow(
-				() -> new OrderItemIntegrityException("반품 정보를 찾을 수 없습니다. ID: " + obfuscator.deobfuscate(orderReturnId)));
+		return orderReturnRepository.findById(obfuscator.deobfuscate(orderReturnId)).orElseThrow(
+				() -> new OrderReturnIntegrityException("반품 정보를 찾을 수 없습니다. ID: " + obfuscator.deobfuscate(orderReturnId)));
 	}
 	
 	/**
-	 * 이미 출고로 인한 반품 생성
+	 * 반품 메모 수정
 	 */
 	@Transactional
-	public OrderReturn createReturnByCancelReturn(OrderItem orderItem) {
+	public OrderReturnResponseDto modifyMemo(Long orderReturnId, String memo) {
 		
-			OrderReturn orderReturn = OrderReturn.builder()
-					.orderItem(orderItem)
-					.address(orderItem.getOrder().getAddress())
-					.returnCount(orderItem.getCount())
-					.returnReason(ReturnReason.SELLER_FAULT)
-					.build();
+		OrderReturn orderReturn = findOrderReturnById(orderReturnId);
 		
-		return orderReturn;
+		orderReturn.modifyMemo(memo);
+		
+		return OrderReturnResponseDto.fromEntity(orderReturn, obfuscator);
 	}
 	
 	/**
@@ -55,10 +49,7 @@ public class OrderReturnService {
 		
 		OrderReturn orderReturn = findOrderReturnById(orderReturnId);
 		
-		Shipment shipment= Shipment.builder()
-				.shippingCompany(dto.shippingCompany())
-				.trackingNumber(dto.trackingNumber())
-				.build();
+		Shipment shipment= createShipmentFromDto(dto);
 		
 		orderReturn.shipmentStart(shipment);
 		
@@ -73,10 +64,7 @@ public class OrderReturnService {
 		
 		OrderReturn orderReturn = findOrderReturnById(orderReturnId);
 		
-		Shipment shipment= Shipment.builder()
-				.shippingCompany(dto.shippingCompany())
-				.trackingNumber(dto.trackingNumber())
-				.build();
+		Shipment shipment= createShipmentFromDto(dto);
 		
 		orderReturn.shipmentUpdate(shipment);
 		
@@ -87,20 +75,20 @@ public class OrderReturnService {
 	 * 수동 반품 입고 완료
 	 */
 	@Transactional
-	public OrderReturnResponseDto arrivedOrderReturn(Long orderReturnId) {
+	public OrderReturnResponseDto manualArrivedOrderReturn(Long orderReturnId) {
 		
 		OrderReturn orderReturn = findOrderReturnById(orderReturnId);
 		
 		if(orderReturn.getShipment() == null) {
 			Shipment shipment = Shipment.builder()
-					.shippingCompany("직접운송")
-					.trackingNumber("777777777777")
+					.shippingCompany(MANUAL_ARRIVED_SHIPPING_COMPANY)
+					.trackingNumber(MANUAL_ARRIVED_SHIPPING_TRACKING_NUMBER)
 					.build();
 			
 			orderReturn.shipmentStart(shipment);
 		}
 
-		orderReturn.arrvied();
+		orderReturn.arrived();
 		
 		return OrderReturnResponseDto.fromEntity(orderReturn, obfuscator);
 	}
@@ -113,10 +101,6 @@ public class OrderReturnService {
 		
 		OrderReturn orderReturn = findOrderReturnById(orderReturnId);
 		
-		if(!Objects.equals(OrderReturnStatus.RETURN_INSPECTING, orderReturn.getOrderReturnStatus())) {
-			throw new OrderReturnIllegalException("반품 완료 및 환불 처리 실패. 반품 상품 상태가 검수중이 아님.");
-		}
-		
 		// 1. 반품 공제 금액 제외한 금액 환불 외부 API 요청
 		ReturnPayment returnPayment = returnPaymentService.refundOrderReturn(orderReturn);
 		
@@ -127,5 +111,25 @@ public class OrderReturnService {
 		orderReturn.getOrderItem().getProductVariant().stockIncreaseByReturnCompleted(orderReturn.getReturnCount());
 
 		return OrderReturnResponseDto.fromEntity(orderReturn, obfuscator);
+	}
+	
+	/**
+	 * 반품 반려
+	 */
+	@Transactional
+	public OrderReturnResponseDto unableOrderReturn(Long orderReturnId) {
+		
+		OrderReturn orderReturn = findOrderReturnById(orderReturnId);
+		
+		orderReturn.unable();
+		
+		return OrderReturnResponseDto.fromEntity(orderReturn, obfuscator);
+	}
+	
+	private Shipment createShipmentFromDto(ShipmentRequestDto dto) {
+	    return Shipment.builder()
+	            .shippingCompany(dto.shippingCompany())
+	            .trackingNumber(dto.trackingNumber())
+	            .build();
 	}
 }

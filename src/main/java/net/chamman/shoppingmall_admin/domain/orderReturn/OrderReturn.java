@@ -26,7 +26,7 @@ import net.chamman.shoppingmall_admin.domain.address.Address;
 import net.chamman.shoppingmall_admin.domain.orderItem.OrderItem;
 import net.chamman.shoppingmall_admin.domain.returnPayment.ReturnPayment;
 import net.chamman.shoppingmall_admin.domain.shipment.Shipment;
-import net.chamman.shoppingmall_admin.exception.domain.order.OrderReturnIllegalException;
+import net.chamman.shoppingmall_admin.exception.domain.orderReturn.OrderReturnIllegalException;
 import net.chamman.shoppingmall_admin.support.BaseEntity;
 
 @Entity
@@ -47,12 +47,15 @@ public class OrderReturn extends BaseEntity{
 	@JoinColumn(name = "address_id", nullable = false)
 	private Address address; // 반품 주소
     
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
 	@JoinColumn(name = "shipment_id")
-	private Shipment shipment; // 운송
+	private Shipment shipment; // 반품 운송
 	
     @Column(nullable = false)
 	private int returnCount; // 반품 수량
+    
+    @Column
+	private String memo; // 반품 메모
     
 	@Enumerated(EnumType.STRING)
     private ReturnReason returnReason; // 반품 사유
@@ -80,7 +83,8 @@ public class OrderReturn extends BaseEntity{
 		
 	    RETURN_REQUESTED("반품중"), 
 	    RETURN_INSPECTING("반품 검수중"),
-	    RETURN_COMPLETED("반품 완료");
+	    RETURN_COMPLETED("반품 완료"),
+		RETURN_UNABLE("반품 불가");
 	    
 		private final String label;
 
@@ -90,9 +94,13 @@ public class OrderReturn extends BaseEntity{
 		if(shipment == null) {
 			throw new OrderReturnIllegalException("반품 운송장 기입 처리 불가. shipment == null");
 		}
+		if(!Objects.equals(OrderReturnStatus.RETURN_REQUESTED, this.orderReturnStatus)) {
+			throw new OrderReturnIllegalException("반품 운송장 기입 처리 불가. 반품 상태가 반품중이 아님.");
+		}
 		if (this.shipment != null) {
 			throw new OrderReturnIllegalException("반품 운송장 기입 처리 불가. 이미 운송장 정보가 등록되어 있음.");
 		}
+		
 		this.shipment = shipment;
 	}
 	
@@ -100,10 +108,17 @@ public class OrderReturn extends BaseEntity{
 		if(shipment == null) {
 			throw new OrderReturnIllegalException("반품 운송장 수정 처리 불가. shipment == null");
 		}
+		if(!Objects.equals(OrderReturnStatus.RETURN_REQUESTED, this.orderReturnStatus)) {
+			throw new OrderReturnIllegalException("반품 운송장 수정 처리 불가. 반품 상태가 반품중이 아님.");
+		}
+		if (this.shipment == null) {
+			throw new OrderReturnIllegalException("반품 운송장 수정 처리 불가. 운송장 정보가 등록되어 있지 않음.");
+		}
+		
 		this.shipment = shipment;
 	}
 	
-	protected void arrvied() {
+	protected void arrived() {
 		
 		if(!Objects.equals(OrderReturnStatus.RETURN_REQUESTED, this.orderReturnStatus)) {
 			throw new OrderReturnIllegalException("반품 입고 처리 불가. 반품 상품 상태가 반품중이 아님.");
@@ -114,12 +129,29 @@ public class OrderReturn extends BaseEntity{
 		}
 		
 		this.orderReturnStatus=OrderReturnStatus.RETURN_INSPECTING;
-		
 	}
 	
 	protected void refund(ReturnPayment returnPayment) {
+		
+		if(!Objects.equals(OrderReturnStatus.RETURN_INSPECTING, this.orderReturnStatus)) {
+			throw new OrderReturnIllegalException("반품 환불 처리 불가. 반품 상품 상태가 반품 검수중이 아님.");
+		}
+		
 		this.returnPayment.add(returnPayment);
 		this.orderReturnStatus=OrderReturnStatus.RETURN_COMPLETED;
+	}
+	
+	protected void unable() {
+		
+		if(!Objects.equals(OrderReturnStatus.RETURN_INSPECTING, this.orderReturnStatus)) {
+			throw new OrderReturnIllegalException("반품 반려 처리 불가. 반품 상품 상태가 반품 검수중이 아님.");
+		}
+		
+		this.orderReturnStatus=OrderReturnStatus.RETURN_UNABLE;
+	}
+	
+	protected void modifyMemo(String memo) {
+		this.memo=memo;
 	}
 	
 }
