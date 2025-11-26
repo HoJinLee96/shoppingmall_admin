@@ -1,9 +1,9 @@
 package net.chamman.shoppingmall_admin.exception.domain.orderReturn;
 
-import net.chamman.shoppingmall_admin.exception.DomainIllegalException;
+import net.chamman.shoppingmall_admin.exception.CustomException;
 import net.chamman.shoppingmall_admin.exception.HttpStatusCode;
 
-public class OrderReturnIllegalException extends DomainIllegalException{
+public class OrderReturnIllegalException extends CustomException{
 
 	public OrderReturnIllegalException(Exception e) {
 		super(HttpStatusCode.ORDER_RETURN_ILLEGAL, e);

@@ -19,7 +19,7 @@ import net.chamman.shoppingmall_admin.domain.productVariant.ProductVariant;
 import net.chamman.shoppingmall_admin.domain.productVariant.ProductVariantService;
 import net.chamman.shoppingmall_admin.domain.productVariant.dto.ProductVariantUpdateRequestDto;
 import net.chamman.shoppingmall_admin.exception.domain.product.ProductIntegrityException;
-import net.chamman.shoppingmall_admin.exception.domain.product.variant.ProductVariantIllegalException;
+import net.chamman.shoppingmall_admin.exception.domain.productVariant.ProductVariantIllegalException;
 import net.chamman.shoppingmall_admin.security.obfuscation.Obfuscator;
 
 @Slf4j
