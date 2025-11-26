@@ -21,7 +21,6 @@ import net.chamman.shoppingmall_admin.domain.address.Address;
 import net.chamman.shoppingmall_admin.domain.member.Member;
 import net.chamman.shoppingmall_admin.domain.orderItem.OrderItem;
 import net.chamman.shoppingmall_admin.domain.orderPayment.OrderPayment;
-import net.chamman.shoppingmall_admin.domain.returnPayment.ReturnPayment;
 import net.chamman.shoppingmall_admin.support.BaseEntity;
 
 @Entity

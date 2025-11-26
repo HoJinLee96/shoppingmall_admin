@@ -40,7 +40,7 @@ public class OrderExchange extends BaseEntity{
 	@JoinColumn(name = "pickup_address_id", nullable = false)
 	private Address pickupAddress;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
 	@JoinColumn(name = "pickup_shipment_id")
 	private Shipment pickupShipment;
 	
@@ -48,7 +48,7 @@ public class OrderExchange extends BaseEntity{
 	@JoinColumn(name = "exchange_shipping_address_id", nullable = false)
 	private Address exchangeShippingAddress;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
 	@JoinColumn(name = "exchange_shipping_shipment_id")
 	private Shipment exchangeShippingShipment;
 	

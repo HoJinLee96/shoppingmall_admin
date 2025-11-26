@@ -21,12 +21,12 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import net.chamman.shoppingmall_admin.domain.address.Address;
 import net.chamman.shoppingmall_admin.domain.cartItem.CartItem;
-import net.chamman.shoppingmall_admin.domain.coupon.MemberCoupon;
+import net.chamman.shoppingmall_admin.domain.memberCoupon.MemberCoupon;
 import net.chamman.shoppingmall_admin.domain.oauth.Oauth;
 import net.chamman.shoppingmall_admin.domain.order.Order;
 import net.chamman.shoppingmall_admin.domain.question.entity.Question;
 import net.chamman.shoppingmall_admin.domain.review.Review;
-import net.chamman.shoppingmall_admin.domain.wishlist.Wishlist;
+import net.chamman.shoppingmall_admin.domain.wishItem.WishItem;
 import net.chamman.shoppingmall_admin.exception.domain.member.status.MemberStatusDeleteException;
 import net.chamman.shoppingmall_admin.exception.domain.member.status.MemberStatusLockedException;
 import net.chamman.shoppingmall_admin.exception.domain.member.status.MemberStatusStayException;
@@ -98,7 +98,7 @@ public class Member extends BaseEntity {
 
     @BatchSize(size = 100)
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Wishlist> wishlists = new ArrayList<>();
+    private List<WishItem> wishItems = new ArrayList<>();
 
     @BatchSize(size = 100)
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})

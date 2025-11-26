@@ -6,19 +6,19 @@ import net.chamman.shoppingmall_admin.exception.HttpStatusCode;
 public class SignInFailedOutException extends CustomException{
 
 	public SignInFailedOutException(Exception e) {
-		super(HttpStatusCode.SIGNIN_FAILED_OUT, e);
+		super(HttpStatusCode.ADMIN_SIGNIN_FAILED_OUT, e);
 	}
 
 	public SignInFailedOutException(String message, Exception e) {
-		super(HttpStatusCode.SIGNIN_FAILED_OUT, message, e);
+		super(HttpStatusCode.ADMIN_SIGNIN_FAILED_OUT, message, e);
 	}
 
 	public SignInFailedOutException(String message) {
-		super(HttpStatusCode.SIGNIN_FAILED_OUT, message);
+		super(HttpStatusCode.ADMIN_SIGNIN_FAILED_OUT, message);
 	}
 
 	public SignInFailedOutException() {
-		super(HttpStatusCode.SIGNIN_FAILED_OUT);
+		super(HttpStatusCode.ADMIN_SIGNIN_FAILED_OUT);
 	}
 	
 }

@@ -26,9 +26,8 @@ import lombok.Getter;
 import net.chamman.shoppingmall_admin.domain.orderItem.OrderItem;
 import net.chamman.shoppingmall_admin.domain.product.Product;
 import net.chamman.shoppingmall_admin.domain.productImage.ProductImage;
-import net.chamman.shoppingmall_admin.exception.domain.product.variant.ProductVariantIllegalException;
-import net.chamman.shoppingmall_admin.exception.domain.product.variant.StockNotEnoughException;
-import net.chamman.shoppingmall_admin.exception.domain.product.variant.StockValidationException;
+import net.chamman.shoppingmall_admin.exception.domain.productVariant.ProductVariantIllegalException;
+import net.chamman.shoppingmall_admin.exception.domain.productVariant.ProductVariantStockNotEnoughException;
 import net.chamman.shoppingmall_admin.support.BaseEntity;
 
 @Entity
@@ -104,7 +103,7 @@ public class ProductVariant extends BaseEntity {
 	protected void removeStock(int quantity) {
 		int restStock = this.stockQuantity - quantity;
 		if (restStock < 0) {
-			throw new StockNotEnoughException("수량 부족");
+			throw new ProductVariantStockNotEnoughException("수량 부족");
 		}
 		this.stockQuantity = restStock;
 	}
@@ -127,17 +126,17 @@ public class ProductVariant extends BaseEntity {
 		if (0 <= sellingPrice && sellingPrice <= MAX_SELLINGPRICE) {
 			this.sellingPrice = sellingPrice;
 		} else {
-			throw new StockValidationException("판매 가격 입력 값이 유효하지 않습니다. sellingPrice: " + sellingPrice);
+			throw new ProductVariantIllegalException("판매 가격 입력 값이 유효하지 않습니다. sellingPrice: " + sellingPrice);
 		}
 		if (0 <= costPrice && costPrice <= MAX_COSTPRICE) {
 			this.costPrice = costPrice;
 		} else {
-			throw new StockValidationException("소비자 가격 입력 값이 유효하지 않습니다. costPrice: " + costPrice);
+			throw new ProductVariantIllegalException("소비자 가격 입력 값이 유효하지 않습니다. costPrice: " + costPrice);
 		}
 		if (0 <= stockQuantity && stockQuantity <= MAX_STOCKQUANTITY) {
 			this.stockQuantity = stockQuantity;
 		} else {
-			throw new StockValidationException("재고 입력 값이 유효하지 않습니다. quantity: " + stockQuantity);
+			throw new ProductVariantIllegalException("재고 입력 값이 유효하지 않습니다. quantity: " + stockQuantity);
 		}
 
 		if(newStatus == ProductVariantStatus.DRAFT || newStatus == ProductVariantStatus.DELETED) {
@@ -148,7 +147,7 @@ public class ProductVariant extends BaseEntity {
 	}
 
 	/**
-	 * 주문 가능 여부를 검증하는 메서드
+	 * 주문 가능 여부를 검증
 	 * 
 	 * @param requestedQuantity 주문 요청 수량
 	 */
@@ -160,7 +159,7 @@ public class ProductVariant extends BaseEntity {
 
 		// 2. 재고 수량 검증
 		if (this.stockQuantity < requestedQuantity) {
-			throw new StockNotEnoughException("상품의 재고가 부족합니다.");
+			throw new ProductVariantStockNotEnoughException("상품의 재고가 부족합니다.");
 		}
 	}
 	

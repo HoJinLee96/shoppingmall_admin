@@ -24,8 +24,8 @@ import net.chamman.shoppingmall_admin.domain.productVariant.dto.ProductVariantRe
 import net.chamman.shoppingmall_admin.domain.productVariant.dto.ProductVariantSaleInfoRequestDto;
 import net.chamman.shoppingmall_admin.domain.productVariant.dto.ProductVariantSaleInfoResponseDto;
 import net.chamman.shoppingmall_admin.domain.productVariant.dto.ProductVariantUpdateRequestDto;
-import net.chamman.shoppingmall_admin.exception.domain.product.ProductImageIllegalException;
-import net.chamman.shoppingmall_admin.exception.domain.product.variant.ProductVariantIntegrityException;
+import net.chamman.shoppingmall_admin.exception.domain.productImage.ProductImageIllegalException;
+import net.chamman.shoppingmall_admin.exception.domain.productVariant.ProductVariantIntegrityException;
 import net.chamman.shoppingmall_admin.exception.infra.file.FileIllegalException;
 import net.chamman.shoppingmall_admin.security.obfuscation.Obfuscator;
 

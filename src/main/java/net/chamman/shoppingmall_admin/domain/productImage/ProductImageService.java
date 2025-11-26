@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.chamman.shoppingmall_admin.domain.productImage.ProductImage.ImageType;
 import net.chamman.shoppingmall_admin.domain.productVariant.ProductVariant;
-import net.chamman.shoppingmall_admin.exception.domain.product.variant.ProductVariantIntegrityException;
+import net.chamman.shoppingmall_admin.exception.domain.productVariant.ProductVariantIntegrityException;
 import net.chamman.shoppingmall_admin.security.obfuscation.Obfuscator;
 
 @Slf4j

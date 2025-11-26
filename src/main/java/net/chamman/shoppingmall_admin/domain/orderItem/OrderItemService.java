@@ -8,16 +8,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.chamman.shoppingmall_admin.domain.coupon.MemberCoupon;
+import net.chamman.shoppingmall_admin.domain.memberCoupon.MemberCoupon;
 import net.chamman.shoppingmall_admin.domain.order.Order;
 import net.chamman.shoppingmall_admin.domain.orderItem.OrderItem.OrderItemStatus;
 import net.chamman.shoppingmall_admin.domain.orderItem.dto.OrderItemShipmentRequestDto;
 import net.chamman.shoppingmall_admin.domain.orderReturn.OrderReturn;
+import net.chamman.shoppingmall_admin.domain.orderReturn.OrderReturn.ReturnReason;
 import net.chamman.shoppingmall_admin.domain.orderReturn.OrderReturnService;
 import net.chamman.shoppingmall_admin.domain.shipment.Shipment;
 import net.chamman.shoppingmall_admin.domain.shipment.dto.ShipmentRequestDto;
-import net.chamman.shoppingmall_admin.exception.domain.order.OrderItemIllegalException;
-import net.chamman.shoppingmall_admin.exception.domain.order.OrderItemIntegrityException;
+import net.chamman.shoppingmall_admin.exception.domain.orderItem.OrderItemIllegalException;
+import net.chamman.shoppingmall_admin.exception.domain.orderItem.OrderItemIntegrityException;
 import net.chamman.shoppingmall_admin.security.obfuscation.Obfuscator;
 
 @Slf4j
@@ -143,7 +144,12 @@ public class OrderItemService {
 			orderItem.cancelReturn(shipment);
 			
 			// 3. OrderReturn 생성
-			OrderReturn orderReturn = orderReturnService.createReturnByCancelReturn(orderItem);
+			OrderReturn orderReturn = OrderReturn.builder()
+					.orderItem(orderItem)
+					.address(orderItem.getOrder().getAddress())
+					.returnCount(orderItem.getCount())
+					.returnReason(ReturnReason.SELLER_FAULT)
+					.build();
 			orderItem.cancelReturn(orderReturn);
 			
 			log.debug("* 취소 반려 진행. 운송장 등록, 배송 시작, 반품 생성.");

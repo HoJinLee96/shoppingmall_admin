@@ -14,7 +14,7 @@ import net.chamman.shoppingmall_admin.domain.orderReturn.OrderReturn;
 import net.chamman.shoppingmall_admin.domain.orderReturn.OrderReturn.ReturnReason;
 import net.chamman.shoppingmall_admin.domain.payment.Payment;
 import net.chamman.shoppingmall_admin.domain.payment.Payment.PaymentStatus;
-import net.chamman.shoppingmall_admin.exception.domain.payment.ReturnPaymentIllegalException;
+import net.chamman.shoppingmall_admin.exception.domain.returnPayment.ReturnPaymentIllegalException;
 import net.chamman.shoppingmall_admin.infra.payment.PaymentGateway;
 import net.chamman.shoppingmall_admin.infra.payment.dto.PaymentCancelRequestDto;
 import net.chamman.shoppingmall_admin.infra.payment.dto.PaymentCancelResponseDto;

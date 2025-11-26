@@ -21,14 +21,14 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import net.chamman.shoppingmall_admin.domain.coupon.MemberCoupon;
+import net.chamman.shoppingmall_admin.domain.memberCoupon.MemberCoupon;
 import net.chamman.shoppingmall_admin.domain.order.Order;
 import net.chamman.shoppingmall_admin.domain.orderExchange.OrderExchange;
 import net.chamman.shoppingmall_admin.domain.orderReturn.OrderReturn;
 import net.chamman.shoppingmall_admin.domain.productVariant.ProductVariant;
 import net.chamman.shoppingmall_admin.domain.review.Review;
 import net.chamman.shoppingmall_admin.domain.shipment.Shipment;
-import net.chamman.shoppingmall_admin.exception.domain.order.OrderItemIllegalException;
+import net.chamman.shoppingmall_admin.exception.domain.orderItem.OrderItemIllegalException;
 import net.chamman.shoppingmall_admin.support.BaseEntity;
 
 @Entity
@@ -49,7 +49,7 @@ public class OrderItem extends BaseEntity{
 	@JoinColumn(name = "product_variant_id", nullable = false)
 	private ProductVariant productVariant;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
 	@JoinColumn(name = "shipment_id")
 	private Shipment shipment;
 	

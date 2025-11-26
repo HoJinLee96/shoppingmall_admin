@@ -16,8 +16,8 @@ import net.chamman.shoppingmall_admin.domain.product.ProductRepository;
 import net.chamman.shoppingmall_admin.domain.productCategory.dto.ProductCategoryCreateRequestDto;
 import net.chamman.shoppingmall_admin.domain.productCategory.dto.ProductCategoryResponseDto;
 import net.chamman.shoppingmall_admin.domain.productCategory.dto.ProductCategoryUpdateRequestDto;
-import net.chamman.shoppingmall_admin.exception.domain.product.category.ProductCategoryDeleteException;
-import net.chamman.shoppingmall_admin.exception.domain.product.category.ProductCategoryIntegrityException;
+import net.chamman.shoppingmall_admin.exception.domain.productCategory.ProductCategoryDeleteException;
+import net.chamman.shoppingmall_admin.exception.domain.productCategory.ProductCategoryIntegrityException;
 import net.chamman.shoppingmall_admin.security.obfuscation.Obfuscator;
 
 @Slf4j
@@ -28,7 +28,20 @@ public class ProductCategoryService {
 	private final ProductCategoryRepository productCategoryRepository;
 	private final ProductRepository productRepository;
 	private final Obfuscator obfuscator;
+	
+	
+	/**
+	 * 난수화 된 ProductCategory.id 통해 조회
+	 */
+    @Transactional(readOnly = true)
+	public ProductCategory findProductCategory(Long productCategoryId) {
+		return productCategoryRepository.findById(obfuscator.deobfuscate(productCategoryId))
+				.orElseThrow(() -> new ProductCategoryIntegrityException());
+	}
 
+	/**
+	 * 카테고리 생성
+	 */
 	@CacheEvict(cacheNames = "categoryTree", allEntries = true)
 	@Transactional
 	public void createProductCategory(ProductCategoryCreateRequestDto dto) {
@@ -45,6 +58,9 @@ public class ProductCategoryService {
 		productCategoryRepository.save(productCategory);
 	}
 	
+	/**
+	 * 카테고리 목록 조회
+	 */
 	@Cacheable(cacheNames = "categoryTree")
     @Transactional(readOnly = true)
 	public List<ProductCategoryResponseDto> getProductCategoryTree() {
@@ -75,13 +91,11 @@ public class ProductCategoryService {
         
         return rootDtos;
 	}
-	
-    @Transactional(readOnly = true)
-	public ProductCategory findProductCategory(Long productCategoryId) {
-		return productCategoryRepository.findById(obfuscator.deobfuscate(productCategoryId))
-				.orElseThrow(() -> new ProductCategoryIntegrityException());
-	}
 
+	/**
+	 * 카테고리 수정
+	 * @CacheEvict 통해 캐시 업데이트
+	 */
 	@CacheEvict(cacheNames = "categoryTree", allEntries = true)
 	@Transactional
 	public void updateProductCategory(Long productCategoryId, ProductCategoryUpdateRequestDto dto) {
@@ -89,6 +103,10 @@ public class ProductCategoryService {
 		parent.modifyName(dto.name());
 	}
 	
+	/**
+	 * 카테고리 삭제
+	 * @CacheEvict 통해 캐시 업데이트
+	 */
 	@CacheEvict(cacheNames = "categoryTree", allEntries = true)
 	@Transactional
 	public void deleteProductCategory(Long productCategoryId) {
